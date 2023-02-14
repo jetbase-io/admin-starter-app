@@ -1,0 +1,26 @@
+.time-input {
+  border-bottom: 1px solid #8e8e8e;
+  width: 200px;
+  margin-bottom: 20px;
+  background: whitesmoke;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  padding: 0 0 0 10px;
+}
+.time-input label {
+  width: 100%;
+  color: rgba(0, 0, 0, 0.6);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.4375em;
+  letter-spacing: 0.00938em;
+  font-family: "Roboto","Helvetica","Arial",sans-serif;
+}
+.time-input input {
+  font-family: "Roboto","Helvetica","Arial",sans-serif;
+  width: 100%;
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  outline: none;
+}
