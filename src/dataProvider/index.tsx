@@ -33,19 +33,19 @@ const create = async (path: string, data: any): Promise<any> => {
 // eslint-disable-next-line consistent-return
 const update = async (path: string, data: any): Promise<any> => {
   if (path === "users") {
+    const now = new Date();
     delete data.data.email;
     delete data.data.avatar;
     delete data.data.roles;
     delete data.data.subscriptionId;
     delete data.data.customerStripeId;
+    data.data.confirmedAt = now.toISOString();
+    data.data.confirmationToken = now.getTime() + data.data.username;
   }
   delete data.data.updated_at;
   delete data.data.created_at;
   delete data.data.id;
   delete data.data.internalComment;
-
-  // eslint-disable-next-line no-underscore-dangle
-  // eslint-disable-next-line no-underscore-dangle
 
   const response = await http.put(`${SERVICE_URL}/${path}/${data.id}`, data.data, { proxy: false });
   if (response.status === 200) {
