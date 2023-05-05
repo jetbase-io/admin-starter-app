@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig } from "axios";
 
+import { REFRESH } from "../constants/api-constants";
 import {
   cleanUserTokensFromLocalStorage,
   getAccessToken,
@@ -7,9 +8,9 @@ import {
   setUserTokensToLocalStorage,
 } from "./helpers/auth";
 
-const http = axios.create({
-  baseURL: process.env.REACT_APP_API_URL,
-});
+const baseURL = process.env.REACT_APP_API_URL;
+
+const http = axios.create({ baseURL });
 
 http.interceptors.request.use(
   async (config: AxiosRequestConfig) => {
@@ -34,7 +35,7 @@ http.interceptors.response.use(
       refresh = true;
       try {
         const response = await axios.post(
-          `${process.env.REACT_APP_API_URL}/auth/refresh`,
+          `${baseURL}${REFRESH}`,
           {},
           {
             headers: {
