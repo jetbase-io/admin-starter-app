@@ -2,7 +2,7 @@ import { DataProvider, DeleteParams, GetManyReferenceParams, UpdateManyParams } 
 
 import http from "../auth/http-common";
 
-const SERVICE_URL = `${import.meta.env.VITE_REACT_APP_API_URL}/admin` || "http://localhost:5000/api/admin";
+const SERVICE_URL = `${import.meta.env.VITE_API_URL}/admin` || "http://localhost:5000/api/admin";
 
 const getList = async (path: string, { pagination, sort }: any): Promise<any> => {
   const offset = (pagination.page - 1) * pagination.perPage;
