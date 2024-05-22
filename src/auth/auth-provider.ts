@@ -20,7 +20,7 @@ interface ErrorProps {
 
 const authProvider = {
   login: async ({ username, password }: Props) => {
-    const request = await axios.post(`${process.env.REACT_APP_API_URL}${SIGN_IN_URL}`, { username, password });
+    const request = await axios.post(`${import.meta.env.VITE_REACT_APP_API_URL}${SIGN_IN_URL}`, { username, password });
     setUserTokensToLocalStorage(request.data.accessToken, request.data.refreshToken);
     return Promise.resolve();
   },
