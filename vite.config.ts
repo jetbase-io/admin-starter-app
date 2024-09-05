@@ -1,7 +1,7 @@
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 import { defineConfig } from "vitest/config";
-import { manifest } from "./src/configs/manifest.ts";
+import { manifest } from "./src/configs/manifest";
 
 export default defineConfig({
   plugins: [react(), VitePWA(manifest)],
