@@ -83,7 +83,7 @@ What Compose does for you:
 
    ```bash
    eval "$(minikube docker-env)"
-   docker build -t admin-starter-app-frontend:local \
+   docker build -t admin-starter-app-frontend:latest \
      --build-arg VITE_API_URL=$VITE_API_URL \
      .
    eval "$(minikube docker-env -u)"   # optional: return to host Docker
