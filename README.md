@@ -71,6 +71,59 @@ What Compose does for you:
 - Exposes the container’s `PORT` value on the same port of the host.
 - Connects the container to the `sessions-network` network (automatically created if it does not exist), making service-to-service communication easy when pairing with other apps.
 
+## Deploy to Kubernetes (Minikube)
+
+1. Start (or reuse) a Minikube cluster:
+
+   ```bash
+   minikube start
+   ```
+
+2. Build the admin frontend image inside the Minikube Docker daemon so the cluster can pull it without a registry push. Include the Vite build arguments you need (e.g., `VITE_API_URL`):
+
+   ```bash
+   eval "$(minikube docker-env)"
+   docker build -t admin-starter-app-frontend:local \
+     --build-arg VITE_API_URL=$VITE_API_URL \
+     .
+   eval "$(minikube docker-env -u)"   # optional: return to host Docker
+   ```
+
+3. Configure runtime settings in the manifests under `k8s/`:
+   - `k8s/split/configmap.yaml` (or the ConfigMap section inside `k8s/combined/app.yaml`) defines defaults for `PORT` (`3001` by default) and `VITE_API_URL`.
+   - `k8s/split/secret.yaml` (or the Secret section inside `k8s/combined/app.yaml`) can hold a sensitive override for `VITE_API_URL`. Because the secret is referenced after the ConfigMap in `envFrom`, it takes precedence when both define the same key.
+
+4. Apply either the split manifests or the combined manifest:
+
+   ```bash
+   # split resources (ConfigMap, Secret, Deployment, Service)
+   kubectl apply -f k8s/split
+
+   # combined stack (single multi-document file)
+   kubectl apply -f k8s/combined/app.yaml
+   ```
+
+   The `admin-frontend-service` is exposed as a NodePort (`30082`) so it can live alongside the other JetBase services that already claim `30080`/`30081`.
+
+5. Access the app through the NodePort:
+
+   ```bash
+   minikube service admin-frontend-service --url
+   # or
+   curl http://$(minikube ip):30082
+   ```
+
+   If you prefer a persistent tunnel instead of copying URLs, run `sudo minikube tunnel` in another terminal. It keeps the route to the Kubernetes network open so you can hit `http://127.0.0.1:30082` (or any other exposed NodePort / LoadBalancer) directly.
+
+6. Tear the stack down when you are done:
+
+   ```bash
+   kubectl delete -f k8s/split             # if you applied the split files
+   kubectl delete -f k8s/combined/app.yaml
+   ```
+
+The manifests follow the same structure as the `react-starter-app` equivalents, making it easy to run both frontends side by side for local testing.
+
 ## Available Scripts
 
 In the project directory, you can run:
