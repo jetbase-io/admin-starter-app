@@ -2,6 +2,75 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Docker
+
+The repository ships with a production Dockerfile that builds and serves the compiled React app.
+
+### Dockerfile overview
+
+1. Base image: `node:20-alpine` for a small runtime footprint.
+2. Installs dependencies using `npm ci` (honors `package-lock.json`).
+3. Copies the source, runs `npm run build`, and produces the static bundle in `dist/`.
+4. Starts the Express server defined in `server.cjs`, which simply serves the files in `dist/`.
+
+This approach keeps the runtime image clean—no dev dependencies, no source code, just the compiled assets plus the Node runtime needed to serve them.
+
+### Build the image
+
+```bash
+docker build -t admin-starter-app .
+```
+
+### Run the container
+
+```bash
+docker run --rm -p 3001:3001 -e PORT=3001 admin-starter-app
+```
+
+Key details:
+
+- The container listens on `PORT` (defaults to `3001`). Override by passing `-e PORT=<port>` at runtime.
+- Because the build happens inside the image, there is no need to mount your source directory. Rebuild the image whenever you change code.
+- `server.cjs` simply serves pre-built static assets—there is no SSR layer to configure.
+
+### Environment variables
+
+The React build is influenced by variables prefixed with `VITE_` (defined in `.env` before `npm run build`). At runtime, only `PORT` is consumed by `server.cjs`. If you need other runtime values, add them to the Express server and pass them through via `docker run -e KEY=value`.
+
+### Stopping / cleaning up
+
+Stop a running container with `Ctrl+C` (if in the foreground) or `docker stop <id>`. Remove dangling images with `docker image prune` when you no longer need them.
+
+## Docker Compose
+
+Compose offers a convenient way to run the container with environment variables and shared networks already wired up.
+
+1. Create an `.env` file in the project root (or copy `.env.example` if present) with at least:
+
+   ```bash
+   PORT=3001
+   ```
+
+   Add other environment variables consumed by your app.
+2. Bring the stack up:
+
+   ```bash
+   docker compose up --build
+   ```
+
+   Use `docker compose up -d --build` to run in detached mode.
+3. Tear it down:
+
+   ```bash
+   docker compose down        # add --volumes to drop the node_modules volume
+   ```
+
+What Compose does for you:
+
+- Mounts `/app/node_modules` as an anonymous volume so host systems do not interfere with the container’s dependency tree.
+- Exposes the container’s `PORT` value on the same port of the host.
+- Connects the container to the `sessions-network` network (automatically created if it does not exist), making service-to-service communication easy when pairing with other apps.
+
 ## Available Scripts
 
 In the project directory, you can run:
